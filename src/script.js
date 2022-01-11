@@ -4,9 +4,9 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'lil-gui'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 // import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
-import { LoopOnce, SphereGeometry, TextureLoader } from 'three'
-import CANNON, { Sphere } from 'cannon'
+import {SphereGeometry, TextureLoader } from 'three'
 import $ from "./Jquery"
+import gsap from "gsap";
 
 
 
@@ -43,47 +43,13 @@ const portfolioButton=document.getElementsByClassName("portfolio");
 const aboutButton = document.getElementsByClassName("about")
 const  contactButton = document.getElementsByClassName("contact")
 const  newsButton = document.getElementsByClassName("news")
-const  fireButton = document.getElementsByClassName("fire")
 
-$(fireButton).click(()=>{
-    createMeteor(
-        Math.random()*.5,
-        {
-            x: (Math.random() + 4) * 3,
-            y: (Math.random()*6)-4,
-            z: (Math.random() - 0.5) * 3
-        }
-
-    )
-})
 
 //raycaster
 const raycaster = new THREE.Raycaster()
 
 //cannon
-console.log(CANNON)
-const world = new CANNON.World()
-world.broadphase = new CANNON.SAPBroadphase(world)
-world.allowSleep = true
-world.gravity.set(0, - 9.82, 0)
 
-const defaultMaterial = new CANNON.Material('default')
-const defaultContactMaterial = new CANNON.ContactMaterial(
-    defaultMaterial,
-    defaultMaterial,
-    {
-        friction: 30,
-        restitution: 0.1
-    }
-)
-const bubbleShape = new CANNON.Sphere(5.6)
-const bubbleBody = new CANNON.Body({
-    mass: 0,
-    position: new CANNON.Vec3(0, -8.3, 0),
-    shape: bubbleShape,
-    material: defaultMaterial
-})
-world.addBody(bubbleBody)
 // const fakeEarthMaterial = new THREE.MeshStandardMaterial({color:'pink'})
 // const fakeEarthGeometry = new THREE.SphereGeometry(5.6,20,20)
 // const fakeEarthMesh = new THREE.Mesh(fakeEarthGeometry, fakeEarthMaterial)
@@ -91,16 +57,6 @@ world.addBody(bubbleBody)
 // scene.add(fakeEarthMesh)
     
 //physics floor
-const floorShape = new CANNON.Plane()
-const floorBody = new CANNON.Body()
-floorBody.mass = 0
-floorBody.position=new CANNON.Vec3(0, -20, 0)
-floorBody.addShape(floorShape)
-floorBody.quaternion.setFromAxisAngle(
-    new CANNON.Vec3(-1,0,0),
-    Math.PI *0.5
-)
-world.addBody(floorBody)
 //objects to update
 const objectsToUpdate = []
 
@@ -108,47 +64,11 @@ const objectsToUpdate = []
 const sphereGeometry = new THREE.SphereGeometry(1, 8, 8)
 
 
-
-const createMeteor = (radius, position) =>
-{
-    const spherecolor = function getRandomColor() {
-        var letters = '0123456789ABCDEF';
-        var color = '#';
-        for (var i = 0; i < 6; i++) {
-          color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-      }
-
-      console.log("fire")
-      const sphereMaterial = new THREE.MeshStandardMaterial({emissive:spherecolor()})
-
-    // Three.js mesh
+const danceroutine = ()=>{
     
-    const mesh = new THREE.Mesh(star, sphereMaterial)
-    mesh.scale.set(radius, radius, radius)
-    mesh.rotation.y=Math.PI*.5
-    mesh.position.copy(position)
-    scene.add(mesh)
 
-    // Cannon.js body
-    const shape = new CANNON.Sphere(radius)
-
-    const body = new CANNON.Body({
-        mass: 1,
-        position: new CANNON.Vec3(0, 5, 0),
-        shape: shape,
-        material: defaultMaterial
-    })
-    body.position.copy(position)
-    body.applyForce(new CANNON.Vec3(- 2000, -500, 0), body.position)
-    body.addEventListener('collide', playHitSound)
-
-    world.addBody(body)
-
-    // Save in objects
-    objectsToUpdate.push({ mesh, body })
 }
+
 
 /**
  * Sizes
@@ -237,6 +157,43 @@ $(".xButton").click((e)=>{
 
 })
 
+$(".play").click((e)=>{
+
+    
+    e.preventDefault();
+    e.stopPropagation();
+
+   dance="on"
+   $(".play").addClass("invisibleP")
+   $(".stop").removeClass("invisibleP")
+   gsap.to(teaset.children[8].rotation,{duration:1,x:Math.PI*.25})
+   gsap.to(teaset.children[8].position,{duration:1,z:1.5})
+   gsap.to(teaset.children[8].position,{duration:1,y:.4})
+
+
+})
+
+$(".stop").click((e)=>{
+
+    
+    e.preventDefault();
+    e.stopPropagation();
+
+   dance="off"
+   $(".play").removeClass("invisibleP")
+   $(".stop").addClass("invisibleP")
+   gsap.to(teaset.children[8].rotation,{duration:.5,x:Math.PI*0})
+   gsap.to(teaset.children[8].position,{duration:.5,z:.7})
+   gsap.to(teaset.children[8].position,{duration:.5,y:.2})
+   gsap.to( teaset.children[5].position,{duration:.3,y:-1.45})
+    gsap.to( teaset.children[12].position,{duration:.3,y:-1.45})
+    gsap.to( teaset.children[11].position,{duration:.3,y:.8})
+    gsap.to( teaset.children[1].rotation,{duration:.6,y:0})
+
+
+   
+
+})
 window.addEventListener('mousemove', (event) =>
 {
     mouse.x = event.clientX / sizes.width * 2 - 1
@@ -253,7 +210,7 @@ window.addEventListener('mousemove', (event) =>
 
 const gltfLoader = new GLTFLoader()
 // gltfLoader.setDRACOLoader(dracoLoader)
-let rotation="on"
+let dance="off"
 let mixer = null
 let mixer2 = null
 let satelites = null
@@ -264,6 +221,7 @@ let turnhead=null
 let walk = null
 let sateliteGroup=null
 let star=null
+
 
 
 gltfLoader.load(
@@ -285,8 +243,13 @@ gltfLoader.load(
         })
 
         teaset.children[5].material=headMaterial;
-
+        teaset.children[3].position.y-=.2
+        teaset.children[12].position.y-=.2
+        teaset.children[5].position.y-=.2
+        teaset.children[8].position.y-=.1
         
+        
+            
 
         
 
@@ -357,36 +320,52 @@ raycaster.setFromCamera(mouse, camera)
 
 $(portfolioButton).mouseover(()=>{
     // teaset.children[1].position.y=-1;
-    teaset.children[1].rotation.x=-.05*Math.PI
+    // teaset.children[1].rotation.x=-.05*Math.PI
+    gsap.to( teaset.children[1].rotation,{duration:.3,x:-.05*Math.PI})
+
     
 
 
 })
 $(aboutButton).mouseover(()=>{
    
-    teaset.children[5].position.y=0;
-    teaset.children[12].position.y=0;
+    // teaset.children[5].position.y=-.5;
+    // teaset.children[12].position.y=-.5;
+    gsap.to( teaset.children[5].position,{duration:.3,y:-.5})
+    gsap.to( teaset.children[12].position,{duration:.3,y:-.5})
+
+
 
 
 })
 $(contactButton).mouseover(()=>{
-    teaset.children[11].position.y=1;
+    gsap.to( teaset.children[11].position,{duration:.3,y:1})
+
+    // teaset.children[11].position.y=1;
   
 
 
 })
 $(newsButton).mouseover(()=>{
-    teaset.children[9].position.y=1;
+    gsap.to( teaset.children[9].position,{duration:.3,y:1})
+
+    // teaset.children[9].position.y=1;
    
 
 })
 
 $(".button").mouseout(()=>{
-     teaset.children[5].position.y=-1.25;
-    teaset.children[12].position.y=-1.25;
-    teaset.children[1].rotation.x=0
-    teaset.children[11].position.y=.8;
-    teaset.children[9].position.y=0.02;
+    gsap.to( teaset.children[5].position,{duration:.3,y:-1.45})
+    gsap.to( teaset.children[12].position,{duration:.3,y:-1.45})
+    gsap.to( teaset.children[1].rotation,{duration:.3,x:0})
+    gsap.to( teaset.children[11].position,{duration:.3,y:.8})
+    gsap.to( teaset.children[9].position,{duration:.3,y:.02})
+    gsap.to( teaset.children[1].rotation,{duration:.3,y:0})
+
+    // teaset.children[12].position.y=-1.45;
+    // teaset.children[1].rotation.x=0
+    // teaset.children[11].position.y=.8;
+    // teaset.children[9].position.y=0.02;
 
 })
 /**
@@ -395,27 +374,39 @@ $(".button").mouseout(()=>{
 
 let oldElapsedTime=null;
 
+
 const clock = new THREE.Clock()
 let previousTime = 0
 const tick = () =>
-
-
-
-
-
    
 {
-    for(const object of objectsToUpdate)
-    {
-        object.mesh.position.copy(object.body.position)
-        object.mesh.quaternion.copy(object.body.quaternion)
-    }
+
+
+
+  
     
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - oldElapsedTime
     oldElapsedTime = elapsedTime
 
-    world.step(1 / 60, deltaTime, 3)
+    if(dance=="on"){
+
+        teaset.children[11].rotation.y+=.01;
+        teaset.children[7].rotation.y-=.01;
+
+        teaset.children[2].rotation.y+=.01;
+        teaset.children[12].position.y=(Math.abs(Math.sin(elapsedTime*1.5)))*.4-1.45
+        teaset.children[11].position.y=(Math.abs(Math.sin(elapsedTime*1.5-1.5)))*.4+.8
+        teaset.children[5].position.y=(Math.abs(Math.sin(elapsedTime*1.5)))*.4-1.45
+        teaset.children[1].rotation.y=(Math.sin(elapsedTime*1.3))-Math.PI*.25
+
+        
+        
+        // teaset.children[8].position.z=-.1
+
+
+    
+    }
 
 
 
