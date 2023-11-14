@@ -9,10 +9,12 @@ import $ from "./Jquery"
 import gsap from "gsap";
 // import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 // import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
-const about = "<p>Shawn Is a person</p>"
-const contact = "<div><a href='mailto:shawnyudesign@gmail.com'>shawnyudesign@gmail.com</a></div>"
-const portfolio = '<div><ul><li><a href="https://shawnwhy.github.io/Cosmotree/">Cosmo Tree</a></li> <li><a href="https://shawnwhy.github.io/CloudySky/">Sky Over Berlin</a></li><li><a href="https://shawnwhy.github.io/CandieEater/">Diary of a Candy Eater</a></div>'
-const news = "<p>Under Construction</p>"
+const about = "<p class='about'>Shawn Yu is a Full-Stack Developer from Northern Virginia. He is a former art teacher and graphic artist.he prides him self in being a team player, being diligent ,and being able to solve intricate problems with creative solutions</p>"
+const contact =
+  "<div><a class='contact' href='mailto:shawnyudesign@gmail.com' target='_blank'>shawnyudesign@gmail.com</a><br/><a target='_blank' class='contact' href='https://www.linkedin.com/in/shawn-yu-4377b411/'>Linkedin</a></div>";
+const portfolio =
+  '<div class="portfolio"><ul><li><a href="https://shawnwhy.github.io/SunRise/" target="_blank">The Sun Also Rises</a></li><li><a target="_blank" href="https://shawnwhy.github.io/nightsky/">Capturing Stars</a></li><li><a target="_blank" href="https://shawnwhy.github.io/blowingInTheWind/">The Wind and the Seasons</a></li><li><a target="_blank" href="https://shawnwhy.github.io/treeplanter/">Autumn Planter</a></li> <li><a  target="_blank" href="https://shawnwhy.github.io/CloudySky/">Sky Over Berlin</a></li><li><a target="_blank" href="https://shawnwhy.github.io/CandieEater/">Diary of a Candy Eater</a></div>';
+const news = "<p class='news'>No news is good news</p>"
 const textureLoader = new THREE.TextureLoader()
 var audioCup = new Audio('/mug.wav');
 var audioPlay = new Audio('/korob.mp3');
@@ -59,7 +61,7 @@ window.addEventListener('resize', () =>
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
     if(sizes.width>860){
-        camera.position.set(7, 5, 0)
+        camera.position.set(7, 10, 0)
         }
         else if (sizes.width>450){
             camera.position.set(7,3,0)
@@ -187,9 +189,21 @@ gltfLoader.load(
         teaset.children[3].position.y-=.2
         teaset.children[12].position.y-=.2
         teaset.children[5].position.y-=.2
-        teaset.children[8].position.y-=.1  
+        teaset.children[8].position.y-=.1
+        $(".loading").css("display","none")
+        $(".loading").css("z-index", -1);  
+        $(".ready").css("display", "block");  
+
     }
 )
+
+$(".ready").click((e)=>{
+    $(".menue").css("display", "block");
+            $(".ready").css("display", "none");
+                    $(".ready").css("z-index", -1);  
+  
+
+})
 
 const cubeTextureLoader = new THREE.CubeTextureLoader()
 
@@ -204,6 +218,7 @@ const RoomMap = cubeTextureLoader.load([
 ])
 
 scene.background = RoomMap;
+// scene.background.rotation
 /**
  * Lights
  */
@@ -226,7 +241,7 @@ scene.add(ambientLight)
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
 camera.focus=20
 if(sizes.width>860){
-camera.position.set(7, 5, 0)
+camera.position.set(7, 6, 0)
 }
 else if (sizes.width>450){
     camera.position.set(7,3,0)
